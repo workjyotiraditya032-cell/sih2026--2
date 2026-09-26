@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="60" time="145.502" timestamp="2026-09-25T16:12:39.253488+00:00" hostname="agent-env-2637cec2-da02-47b4-9ca4-5b70f5beb87b"><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_health" time="0.198" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_materials_list" time="0.134" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_material_detail_and_404" time="0.422" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_commodities_list" time="0.362" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_engine_config" time="0.154" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_food_profiles_endpoint" time="0.132" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_alias_yogurt_to_curd" time="0.126" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_biscuit_ph_unavailable" time="0.138" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_tomato_kb_grounded" time="0.147" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_ambiguous_rejected" time="2.277" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_forbids_extra_fields" time="0.123" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_empty_name" time="0.179" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_invalid_chars" time="0.126" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_tomato_shape_and_ai_or_kb" time="2.444" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_forbid_technical_fields" time="0.204" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_shelf_life_bounds" time="0.265" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_frozen_needs_cold" time="0.146" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_ambient_min_temp" time="0.157" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_empty_food_name" time="0.132" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_four_demos_produce_distinct_structures" time="3.311" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_milk_demo_kb_grounded" time="0.276" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_curd_no_blanket_metal_ban" time="0.283" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_priority_changes_result" time="0.596" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_high_humidity_transport_no_paper_primary" time="0.344" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_ai_estimated_for_unknown_recognized_food" time="0.244" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_recommend_returns_analysis_id_and_reopen_snapshot" time="0.435" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_list_analyses_newest_first" time="10.449" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_legacy_snapshot_rehydrates" time="92.580" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_analyses_search_invalid_chars_422" time="0.116" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_get_unknown_analysis_404" time="10.061"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Read timed out. (read timeout=10)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:540: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:638: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1443: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:337: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:298: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:696: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:847: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:510: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:793: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:542: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:373: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='packintel-api.test', port=443): Read timed out. (read timeout=10)
+
+During handling of the above exception, another exception occurred:
+tests/test_food_intelligence_api.py:275: in test_get_unknown_analysis_404
+    assert requests.get(f"{API}/analyses/99999999", timeout=10).status_code == 404
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:87: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:71: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:651: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:784: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:742: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Read timed out. (read timeout=10)</failure></testcase><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_begin_upload_extra_fields_forbidden" time="0.157" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_begin_upload_zero_size_rejected" time="0.126" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_begin_upload_oversize_rejected" time="0.122" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_recommend_rejects_unconfirmed_image_id" time="0.119" /><testcase classname="tests.test_food_intelligence_fallback" name="test_known_food_falls_back_to_knowledge_base" time="0.028" /><testcase classname="tests.test_food_intelligence_fallback" name="test_malformed_ai_response_falls_back_to_kb" time="0.024" /><testcase classname="tests.test_food_intelligence_fallback" name="test_invalid_material_selection_is_ignored" time="0.025" /><testcase classname="tests.test_food_intelligence_fallback" name="test_duplicate_alternatives_ignored" time="0.028" /><testcase classname="tests.test_food_intelligence_fallback" name="test_missing_groq_key" time="0.025" /><testcase classname="tests.test_food_intelligence_fallback" name="test_unknown_food_with_ai_down_raises_422" time="0.000" /><testcase classname="tests.test_food_intelligence_fallback" name="test_priority_shifts_weights" time="5.499" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_http_429" time="0.002" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_http_500" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_timeout" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_connect_error" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_malformed_json_string" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_json_missing_choices" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_pydantic_validation" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_recommend_survives_httpx_429" time="0.027" /><testcase classname="tests.test_groq_adapter_fallback" name="test_recommend_survives_httpx_timeout" time="0.026" /><testcase classname="tests.test_image_upload_live.TestImageUploadHappyPath" name="test_multichunk_jpeg_real_vision" time="3.409" /><testcase classname="tests.test_image_upload_live.TestImageUploadHappyPath" name="test_small_png_upload" time="1.116" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_offset_mismatch_returns_409" time="0.278" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_duplicate_resend_idempotent" time="1.062" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_missing_chunk_complete_409" time="0.897" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_declared_oversize_rejected_by_chunk" time="0.302" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_wrong_content_rejected_by_pillow" time="0.400" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_completed_upload_repeat_returns_same_identification" time="4.232" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_unknown_image_id_complete_404" time="0.142" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_chunk_too_large_413" time="0.317" /></testsuite></testsuites>

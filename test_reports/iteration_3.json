@@ -1,0 +1,22 @@
+{
+  "summary": "Verified runtime crash fix for Layout.tsx useEffect. Injected init script patching window.scrollTo to return a Promise (reproducing the old bug trigger). Navigated all 7 routes via nav-link-* selectors + browser back. No error overlay, 0 console errors, 0 'destroy is not a function' errors. Smoke flow passed: load-demo -> analyze -> /results shows recommended-material-name ('Micro-Perforated Film'); PDF downloaded (PackIntel_Tomato_analysis-80.pdf); /history lists 80 runs and history-open-80 reopens the run successfully.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Layout.tsx useEffect now uses block body -> returns undefined -> React treats as no cleanup. Fix is correct.",
+    "Scanned src for expression-bodied useEffect arrows (useEffect(() => expr, ...)); none found. Drawer.tsx, MaterialsPage.tsx, HistoryPage.tsx all use block-body effects with proper cleanup/no-return."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Runtime crash 'destroy is not a function' fully resolved. Verified with patched scrollTo returning Promise. All nav routes and core analysis->results->history->PDF flow work without errors.",
+  "rca of the issue": "Newer Chrome makes window.scrollTo return a Promise. Prior Layout.tsx had expression-bodied useEffect: useEffect(() => window.scrollTo(0,0), [pathname]) — its implicit return (the Promise) was treated by React as the cleanup destroy function, causing 'destroy is not a function' on re-run. Fix: converted to block-body effect so it returns undefined."
+}

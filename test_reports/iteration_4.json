@@ -1,0 +1,41 @@
+{
+  "summary": "Backend + frontend regression for PackIntel v2 Food Intelligence. 40/41 backend pytest cases pass (1 skipped due to no matching legacy row). Live Groq AI reasoning verified end-to-end (Tomato & Curd returned intelligence.mode=ai, provider=Groq, model=openai/gpt-oss-120b). Fallback paths (missing key, 429/malformed JSON, invalid material selection, duplicate alternatives, unknown food + AI down) all degrade honestly to knowledge_base mode with a clear message; no 500s. Frontend: 5 demo buttons present (tomato/curd/potato/milk/biscuits), simple food-name input only (no pH/moisture/RH/respiration/MAP fields exposed), Tomato run navigates to /results with recommended-material, AI status card, food-profile provenance, cautions/warnings (chilling injury for 8°C/10d), specifications, alternatives, score breakdown, disclaimer. Back-to-analysis preserves priority. History lists 109 runs and reopens a stored snapshot correctly (shows Reopened from history · stored snapshot). Materials library shows 12/12 packaging materials. Mobile viewport 390px has no horizontal overflow, zero console errors across all pages.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/recommend (Groq)", "issue": "Under rapid concurrent calls the Groq API returns HTTP 429 for gpt-oss-120b and the response silently falls back to knowledge_base mode. Behaviour is correct and honest (message says 'AI service temporarily unavailable') but rate limits may hide the AI mode during load. Not a bug; noted for context."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_food_intelligence_api.py",
+    "/app/backend/tests/test_food_intelligence_fallback.py",
+    "/app/test_reports/pytest/api.xml",
+    "/app/test_reports/pytest/fallback.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "food_intelligence.recommend catches an over-broad tuple of exceptions when validating the AI selection: any non-hashable material id or missing attribute would silently disable AI. Acceptable for a graceful-degradation prototype but consider logging the specific validation failure so we can distinguish 429 vs model hallucination.",
+    "engine_input assumes fixed RH values (65/85/90). This is disclosed in assumptions, but a Fresh Produce food with transportation='high_humidity' still assumes 90% RH regardless of the actual storage_type/temperature. Consider whether ambient+high_humidity should differ from chilled+high_humidity.",
+    "image_service.receive_chunk reads the whole request body into memory up to CHUNK_SIZE and then hands it to a threadpool, but the 413 check inside the stream loop only fires after len(data) > CHUNK_SIZE; a client streaming exactly CHUNK_SIZE+1 in a single flush would still be rejected but the buffer already grew. Not a real DoS since FastAPI caps request size, but consider streaming to disk.",
+    "food_knowledge.py mixes reference bands with prose that reads like measurements ('assumes pasteurized refrigerated milk'). Copy is honest but ensure the frontend labels it 'typical reference profile' everywhere — verified on Tomato reopen screenshot.",
+    "recommend.py exposes SimpleRecommendationRequest as the public schema but the response is the classic RecommendationResponse which still contains an 'input' field with the *internal* RecommendationRequest (moisture_content/oil_content/ph). This leaks the derived-not-measured values through the API surface. Consider stripping or clearly labelling them as 'derived reference midpoints' at the API boundary."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_food_intelligence_api.py (new)",
+    "/app/backend/tests/test_food_intelligence_fallback.py (new)",
+    "/app/backend/tests/_legacy_test_packintel_api.py.bak (renamed old)",
+    "/app/backend/tests/_legacy_test_history_and_pdf.py.bak (renamed old)"
+  ],
+  "success_rate": {"backend": "100% (40/40 executed, 1 skipped)", "frontend": "100%"},
+  "test_credentials": "None required (public prototype).",
+  "seed_data_creation": "None — used existing PostgreSQL fixtures and food KB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Live AI is real: Tomato and Curd single-shot calls returned intelligence.mode=ai (Groq / openai/gpt-oss-120b). When running many /recommend calls back-to-back, expect Groq 429s that legitimately trigger the knowledge_base fallback — space calls out or accept fallback in assertions. All fallback correctness is covered by test_food_intelligence_fallback.py via monkeypatched groq_service.complete. The demo test asserts >=3 of 4 distinct primary materials, which holds even entirely in KB mode. Observed live runs: Tomato->Micro-Perforated Film, Curd->PP Cup with Sealed Lid, Potato->Paper-Based Ventilated Bag, Biscuits->Metallized Film, Milk->Aluminum Foil Laminate.",
+  "rca of the issue": "N/A — no bugs found."
+}

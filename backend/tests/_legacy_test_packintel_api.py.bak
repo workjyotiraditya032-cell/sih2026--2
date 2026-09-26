@@ -1,0 +1,227 @@
+"""PackIntel backend API tests (SIH260236)."""
+import os
+import requests
+
+BASE_URL = os.environ.get("VITE_API_BASE_URL", os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8000")).rstrip("/")
+API = f"{BASE_URL}/api"
+
+
+def _mats(resp_json):
+    return resp_json["materials"] if isinstance(resp_json, dict) else resp_json
+
+
+def _name(mat):
+    return mat.get("material_name") or mat.get("name")
+
+
+TOMATO = {
+    "commodity": "Tomato", "food_category": "Fresh Produce",
+    "moisture_content": 94, "oil_content": 0.2, "ph": 4.3,
+    "respiration_rate": "high", "moisture_sensitivity": "high", "oxygen_sensitivity": "medium",
+    "shelf_life_days": 10, "storage_type": "chilled", "temperature": 8, "relative_humidity": 85,
+    "transportation": "refrigerated", "cost_priority": "balanced",
+    "sustainability_priority": "medium", "map_required": True,
+}
+CHIPS = {
+    "commodity": "Potato Chips", "food_category": "Snacks",
+    "moisture_content": 2, "oil_content": 35, "ph": 6.0,
+    "respiration_rate": "low", "moisture_sensitivity": "high", "oxygen_sensitivity": "high",
+    "shelf_life_days": 120, "storage_type": "ambient", "temperature": 25, "relative_humidity": 55,
+    "transportation": "normal", "cost_priority": "balanced",
+    "sustainability_priority": "medium", "map_required": True,
+}
+RICE = {
+    "commodity": "Basmati Rice", "food_category": "Grains",
+    "moisture_content": 12, "oil_content": 1, "ph": 6.5,
+    "respiration_rate": "low", "moisture_sensitivity": "medium", "oxygen_sensitivity": "low",
+    "shelf_life_days": 365, "storage_type": "ambient", "temperature": 25, "relative_humidity": 50,
+    "transportation": "normal", "cost_priority": "low_cost",
+    "sustainability_priority": "medium", "map_required": False,
+}
+
+
+# ----- Health -----
+class TestHealth:
+    def test_health(self):
+        r = requests.get(f"{API}/health", timeout=10)
+        assert r.status_code == 200
+        d = r.json()
+        assert d["database"]["connected"] is True
+        assert d["data_source"] == "postgresql"
+
+
+# ----- Materials -----
+class TestMaterials:
+    def test_list_all(self):
+        r = requests.get(f"{API}/materials", timeout=10)
+        assert r.status_code == 200
+        mats = _mats(r.json())
+        assert len(mats) == 9
+
+    def test_filter_search_laminate(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"search": "laminate"}, timeout=10).json())
+        assert len(mats) >= 1
+        for m in mats:
+            blob = " ".join([_name(m) or "", m.get("description") or "", m.get("notes") or "", m.get("material_category") or ""]).lower()
+            assert "laminate" in blob
+
+    def test_filter_food_category(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"food_category": "Fresh Produce"}, timeout=10).json())
+        assert len(mats) > 0
+
+    def test_filter_frozen(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"storage_type": "frozen"}, timeout=10).json())
+        assert len(mats) > 0
+
+    def test_filter_map(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"map_suitable": "true"}, timeout=10).json())
+        assert len(mats) > 0
+
+    def test_filter_recyclable(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"recyclable": "true"}, timeout=10).json())
+        assert all(m.get("recyclable") for m in mats)
+
+    def test_filter_biodegradable(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"biodegradable": "true"}, timeout=10).json())
+        assert len(mats) >= 1 and all(m.get("biodegradable") for m in mats)
+
+    def test_filter_max_cost(self):
+        mats = _mats(requests.get(f"{API}/materials", params={"max_cost": 2}, timeout=10).json())
+        for m in mats:
+            assert float(m["relative_cost"]) <= 2
+
+    def test_get_by_id(self):
+        mats = _mats(requests.get(f"{API}/materials", timeout=10).json())
+        mid = mats[0]["id"]
+        r = requests.get(f"{API}/materials/{mid}", timeout=10)
+        assert r.status_code == 200
+        # response may be a plain object
+        body = r.json()
+        obj = body if "id" in body else body.get("material", body)
+        assert obj["id"] == mid
+
+    def test_get_unknown_id_404(self):
+        r = requests.get(f"{API}/materials/99999", timeout=10)
+        assert r.status_code == 404
+
+
+# ----- Commodities -----
+class TestCommodities:
+    def test_list(self):
+        r = requests.get(f"{API}/commodities", timeout=10)
+        assert r.status_code == 200
+        d = r.json()
+        commodities = d["commodities"] if isinstance(d, dict) else d
+        assert len(commodities) == 10
+
+
+# ----- Engine config -----
+class TestEngineConfig:
+    def test_config(self):
+        r = requests.get(f"{API}/engine/config", timeout=10)
+        assert r.status_code == 200
+        d = r.json()
+        assert "base_weights" in d or "weights" in d or "default_weights" in d
+
+
+# ----- Environment -----
+class TestEnvironment:
+    def test_env_nashik(self):
+        r = requests.get(f"{API}/environment", params={"location": "Nashik"}, timeout=20)
+        assert r.status_code in (200, 503)
+        if r.status_code == 200:
+            d = r.json()
+            assert "temperature" in d
+            assert "relative_humidity" in d or "humidity" in d
+
+
+# ----- Recommendation Engine -----
+class TestRecommend:
+    def test_tomato_demo(self):
+        r = requests.post(f"{API}/recommend", json=TOMATO, timeout=20)
+        assert r.status_code == 200, r.text
+        d = r.json()
+        assert _name(d["recommended_material"]) == "Micro-Perforated Film"
+        assert d["data_source"] == "postgresql"
+        assert len(d["alternatives"]) == 2
+        assert len(d["reasons"]) > 0
+        assert d["specifications"]["otr"] is not None
+        assert d["specifications"]["wvtr"] is not None
+        assert d["specifications"]["thickness"] is not None
+        assert len(d["key_factors"]) > 0
+        assert len(d["score_breakdown"]) > 0
+        assert len(d["ranking"]) > 0
+        assert len(d["excluded_materials"]) == 3
+
+    def test_respiration_change_affects_ranking(self):
+        high = requests.post(f"{API}/recommend", json={**TOMATO, "respiration_rate": "high"}, timeout=15).json()
+        low = requests.post(f"{API}/recommend", json={**TOMATO, "respiration_rate": "low"}, timeout=15).json()
+        assert _name(high["recommended_material"]) != _name(low["recommended_material"])
+
+    def test_frozen_excludes_materials(self):
+        payload = {**TOMATO, "storage_type": "frozen", "temperature": -18, "transportation": "frozen"}
+        r = requests.post(f"{API}/recommend", json=payload, timeout=15)
+        assert r.status_code == 200, r.text
+        d = r.json()
+        ranking_names = {m["material_name"] for m in d["ranking"]}
+        for banned in ["PP", "Polypropylene", "Micro-Perforated Film", "Metallized Film", "Biodegradable Film", "PLA"]:
+            assert not any(banned in n for n in ranking_names), f"{banned} should not be ranked when frozen. Got: {ranking_names}"
+
+    def test_sustainability_changes_scores(self):
+        low = requests.post(f"{API}/recommend", json={**TOMATO, "sustainability_priority": "low"}, timeout=15).json()
+        high = requests.post(f"{API}/recommend", json={**TOMATO, "sustainability_priority": "high"}, timeout=15).json()
+        assert low["suitability_score"] != high["suitability_score"] or low["ranking"] != high["ranking"]
+
+    def test_map_required_changes_scores(self):
+        yes = requests.post(f"{API}/recommend", json={**TOMATO, "map_required": True}, timeout=15).json()
+        no = requests.post(f"{API}/recommend", json={**TOMATO, "map_required": False}, timeout=15).json()
+        null = requests.post(f"{API}/recommend", json={**TOMATO, "map_required": None}, timeout=15).json()
+        scores = {yes["suitability_score"], no["suitability_score"], null["suitability_score"]}
+        assert len(scores) >= 2
+
+    def test_cost_priority_low_cost_ldpe(self):
+        r = requests.post(f"{API}/recommend", json={**TOMATO, "cost_priority": "low_cost"}, timeout=15)
+        assert r.status_code == 200
+        assert "LDPE" in _name(r.json()["recommended_material"])
+
+    def test_chips_barrier_top(self):
+        r = requests.post(f"{API}/recommend", json=CHIPS, timeout=15)
+        assert r.status_code == 200, r.text
+        n = _name(r.json()["recommended_material"])
+        assert any(k in n for k in ["Barrier", "Metallized", "Aluminum", "Foil"]), f"got {n}"
+
+    def test_rice_hdpe(self):
+        r = requests.post(f"{API}/recommend", json=RICE, timeout=15)
+        assert r.status_code == 200, r.text
+        n = _name(r.json()["recommended_material"])
+        assert "HDPE" in n, f"got {n}"
+
+
+# ----- Validation -----
+class TestValidation:
+    def test_ph_out_of_range(self):
+        r = requests.post(f"{API}/recommend", json={**TOMATO, "ph": 20}, timeout=10)
+        assert r.status_code == 422
+        assert "Traceback" not in r.text
+
+    def test_rh_out_of_range(self):
+        r = requests.post(f"{API}/recommend", json={**TOMATO, "relative_humidity": 150}, timeout=10)
+        assert r.status_code == 422
+
+    def test_temperature_out_of_range(self):
+        r = requests.post(f"{API}/recommend", json={**TOMATO, "temperature": 999}, timeout=10)
+        assert r.status_code == 422
+
+    def test_frozen_with_warm_temp(self):
+        r = requests.post(f"{API}/recommend", json={**TOMATO, "storage_type": "frozen", "temperature": 5}, timeout=10)
+        assert r.status_code == 422
+
+    def test_missing_field(self):
+        p = dict(TOMATO); p.pop("ph")
+        r = requests.post(f"{API}/recommend", json=p, timeout=10)
+        assert r.status_code == 422
+
+    def test_special_chars_commodity(self):
+        r = requests.post(f"{API}/recommend", json={**TOMATO, "commodity": "<script>alert(1)</script>"}, timeout=10)
+        assert r.status_code == 422
+        assert "Traceback" not in r.text

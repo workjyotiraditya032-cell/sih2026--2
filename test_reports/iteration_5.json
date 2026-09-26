@@ -1,0 +1,34 @@
+{
+  "summary": "Iteration 5 targeted the gaps flagged by main agent: real image upload+vision happy path, image robustness, Groq HTTP adapter fallback coverage, PDF downloads, RunComparison labelling with mixed legacy runs, legacy snapshot rehydrate, and strict 4-distinct demo materials. Added 19 new tests across test_image_upload_live.py (10) and test_groq_adapter_fallback.py (9). All 60 backend tests pass (transient timeout on one under parallel Groq load; passes individually). Live upload verified end-to-end: 900x900 multi-chunk JPEG (>625 KiB, 3 chunks) uploaded via POST /api/food-images -> /chunks?offset=N -> /complete, produced canonical storage_path packintel/food-images/{uuid}.jpg in PostgreSQL food_images row (status=complete), Groq vision returned mode=ai with configured GROQ_VISION_MODEL (qwen/qwen3.8-27b) requiring confirmation, and NO fabricated chemistry. Non-food/gradient image correctly returned unclear=true, food_name=null, mode=ai low confidence, requires_confirmation=true. Robustness: chunk offset mismatch->409, duplicate resend idempotent, missing chunk on complete->409, declared oversize->413, wrong content->415 (Pillow rejects), completed-repeat returns cached identification, unknown UUID->404, oversize chunk->413. Groq adapter now proven to catch httpx 429/500/timeout/connect-error/malformed-JSON/missing-choices/Pydantic-validation and end-to-end /recommend degrades to knowledge_base on real httpx failures. Frontend: PDF from /results (74 KB) and PDF from history-reopened run (73 KB) both saved with %PDF header. RunComparison shows properly labelled 'Moisture / oil (reference)', 'pH (reference range)', '85% (scenario assumption)'; mixed legacy+new comparison shows 'legacy input' suffix on legacy row values as expected. Four demos (Tomato/Curd/Potato/Biscuits) produced 4 DISTINCT recommended structures (test asserts ==4 and passes). Legacy pre-intelligence snapshots rehydrate correctly (id 63 = Tomato -> Micro-Perforated Film, stored_snapshot, no intelligence).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_food_intelligence_api.py",
+    "/app/backend/tests/test_food_intelligence_fallback.py",
+    "/app/backend/tests/test_image_upload_live.py",
+    "/app/backend/tests/test_groq_adapter_fallback.py",
+    "/app/test_reports/pytest/iteration_5.xml",
+    "/app/test_reports/artifacts/results_report.pdf",
+    "/app/test_reports/artifacts/history_reopen_report.pdf",
+    "/app/test_reports/artifacts/comparison_full.png",
+    "/app/test_reports/artifacts/image_upload_ui.png"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "image_service.receive_chunk holds a threading lock across a blocking file read; a slow disk would serialize all chunk writes but this is bounded by 256 KiB. Not a bug, acceptable for prototype.",
+    "groq_service.complete masks the HTTP status in logs (str type name for non-HTTPStatusError) but does not expose the specific 429 vs 5xx to callers. Adequate for graceful degradation; if load telemetry is desired later, propagate status via AIUnavailable args.",
+    "food_intelligence.recommend uses `except groq_service.AIUnavailable:` narrowly for AI selection validation, which contradicts iteration_4 remark about over-broad tuple; the code is correct as-is."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_image_upload_live.py (new, 10 tests)",
+    "/app/backend/tests/test_groq_adapter_fallback.py (new, 9 tests)",
+    "/app/backend/tests/test_food_intelligence_api.py (fixed test_legacy_snapshot_rehydrates to find pre-intelligence snapshots instead of id<50)"
+  ],
+  "success_rate": {"backend": "100% (60/60)", "frontend": "100%"},
+  "test_credentials": "None required (public prototype).",
+  "seed_data_creation": "Test uploads persist objects at packintel/food-images/{uuid}.jpg in Object Storage; DB rows in food_images. Small and disposable.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Live Groq vision uses model qwen/qwen3.8-27b (confirmed via DB identification.model). Image upload endpoints validated end-to-end; storage_path is set post-complete and .part file removed. Parallel pytest with xdist may cause transient 10s connect timeouts when Groq rate-limits multiple /recommend calls simultaneously; rerun failed test individually to confirm (all pass individually). PDF download uses jsPDF client-side; both /results and history reopen produce ~73-74 KB valid PDFs. RunComparison correctly labels reference/scenario/legacy inputs so no unlabelled midpoints leak.",
+  "rca of the issue": "N/A — all previously-flagged untested features now covered and green."
+}

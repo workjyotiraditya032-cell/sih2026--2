@@ -1,0 +1,24 @@
+{
+  "summary": "Iteration 2 tests the two new features: Analysis History (list/get/reopen/compare) and PDF report download. All 11 new backend tests pass (test_history_and_pdf.py). Full regression of 28 iteration-1 tests still 100% green. Frontend Playwright covers /history load, search/refresh, PDF download (correct filename PackIntel_<commodity>_analysis-<id>.pdf), open→/results with history-source-badge ('Reopened from history · stored snapshot'), download-pdf-report-button on /results, 4th-select blocked with toast, RunComparison with 3 columns and 80 highlighted differing rows, run-comparison-close-button, history-clear-selection-button, and end-to-end analyze→history top-row confirmation (new run #79 appeared at top).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_history_and_pdf.py",
+    "/app/backend/tests/test_packintel_api.py",
+    "/app/test_reports/pytest/iteration_2_history.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "analyses.py returns 409 on ValidationError/NoCompatibleMaterialError on GET /api/analyses/{id} — good UX, but not documented in the review request (spec only mentions 404). Consider adding this to API docs so consumers know legacy rows may be un-recomputable.",
+    "PostgreSQL self-heal path was not explicitly tested (optional per request); backend logic exists in bootstrap.py but not exercised in this iteration.",
+    "history-count text uses <button> nested inside <p> for 'Clear selection' — technically invalid HTML (button not allowed as descendant of <p>? Actually it is, but interactive content nesting is fine). Non-blocking."
+  ],
+  "updated_files": ["/app/backend/tests/test_history_and_pdf.py"],
+  "success_rate": {"backend": "100% (11/11 new + 28/28 regression)", "frontend": "100% of new + regression flows"},
+  "test_credentials": "N/A - no auth",
+  "seed_data_creation": "Two new /api/recommend calls were made during testing (Tomato demo runs), appending rows to recommendation_requests. Legacy rows (has_snapshot=false) present from prior iterations were used to verify 'recomputed' path.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend response for POST /api/recommend now includes 'analysis_id' (int). GET /api/analyses returns {count, analyses:[...]}; each analysis has has_snapshot bool. GET /api/analyses/{id} returns full RecommendationResponse with history_source in {'stored_snapshot','recomputed'}. Frontend HistoryPage uses MAX_COMPARE=3. New backend test file: /app/backend/tests/test_history_and_pdf.py. PDF filename format: PackIntel_<commodity-with-dashes>_analysis-<id>.pdf.",
+  "rca of the issue": "No issues identified in this iteration."
+}

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="60" time="82.350" timestamp="2026-09-25T16:07:33.034260+00:00" hostname="agent-env-2637cec2-da02-47b4-9ca4-5b70f5beb87b"><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_http_429" time="0.004" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_tomato_shape_and_ai_or_kb" time="3.148" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_http_500" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_timeout" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_connect_error" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_malformed_json_string" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_json_missing_choices" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_adapter_maps_pydantic_validation" time="0.001" /><testcase classname="tests.test_groq_adapter_fallback" name="test_recommend_survives_httpx_429" time="0.029" /><testcase classname="tests.test_groq_adapter_fallback" name="test_recommend_survives_httpx_timeout" time="0.025" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_food_profiles_endpoint" time="0.164" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_alias_yogurt_to_curd" time="0.165" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_biscuit_ph_unavailable" time="0.886" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_tomato_kb_grounded" time="0.138" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_ambiguous_rejected" time="2.164" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_forbid_technical_fields" time="0.143" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_shelf_life_bounds" time="0.286" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_frozen_needs_cold" time="0.126" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_forbids_extra_fields" time="0.197" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_ambient_min_temp" time="0.128" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_empty_name" time="0.151" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_validation_empty_food_name" time="0.160" /><testcase classname="tests.test_food_intelligence_api.TestFoodProfiles" name="test_analyze_food_invalid_chars" time="0.123" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_four_demos_produce_distinct_structures" time="3.265" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_offset_mismatch_returns_409" time="0.282" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_duplicate_resend_idempotent" time="1.096" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_missing_chunk_complete_409" time="0.973" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_declared_oversize_rejected_by_chunk" time="0.293" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_wrong_content_rejected_by_pillow" time="0.487" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_completed_upload_repeat_returns_same_identification" time="6.659" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_milk_demo_kb_grounded" time="0.244" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_curd_no_blanket_metal_ban" time="0.279" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_priority_changes_result" time="0.669" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_high_humidity_transport_no_paper_primary" time="0.287" /><testcase classname="tests.test_food_intelligence_api.TestRecommend" name="test_ai_estimated_for_unknown_recognized_food" time="0.276" /><testcase classname="tests.test_food_intelligence_fallback" name="test_known_food_falls_back_to_knowledge_base" time="0.027" /><testcase classname="tests.test_food_intelligence_fallback" name="test_malformed_ai_response_falls_back_to_kb" time="0.026" /><testcase classname="tests.test_food_intelligence_fallback" name="test_invalid_material_selection_is_ignored" time="0.025" /><testcase classname="tests.test_food_intelligence_fallback" name="test_duplicate_alternatives_ignored" time="0.025" /><testcase classname="tests.test_food_intelligence_fallback" name="test_missing_groq_key" time="0.025" /><testcase classname="tests.test_food_intelligence_fallback" name="test_unknown_food_with_ai_down_raises_422" time="0.001" /><testcase classname="tests.test_food_intelligence_fallback" name="test_priority_shifts_weights" time="0.453" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_health" time="0.135" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_materials_list" time="0.141" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_material_detail_and_404" time="0.501" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_commodities_list" time="0.150" /><testcase classname="tests.test_food_intelligence_api.TestSystem" name="test_engine_config" time="0.153" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_recommend_returns_analysis_id_and_reopen_snapshot" time="0.513" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_list_analyses_newest_first" time="0.466" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_legacy_snapshot_rehydrates" time="33.758"><failure message="requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/analyses/114 (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce020a9050&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)'))">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:239: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:85: in create_connection
+    raise err
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:73: in create_connection
+    sock.connect(sa)
+E   TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:793: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:494: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:470: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1125: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:827: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:248: in _new_conn
+    raise ConnectTimeoutError(
+E   urllib3.exceptions.ConnectTimeoutError: (&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce020a9050&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)')
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:696: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:847: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:555: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/analyses/114 (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce020a9050&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)'))
+
+During handling of the above exception, another exception occurred:
+tests/test_food_intelligence_api.py:260: in test_legacy_snapshot_rehydrates
+    r = requests.get(f"{API}/analyses/{a['id']}", timeout=15)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:87: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:71: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:651: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:784: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:717: in send
+    raise ConnectTimeout(e, request=request)
+E   requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/analyses/114 (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce020a9050&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)'))</failure></testcase><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_unknown_image_id_complete_404" time="0.168" /><testcase classname="tests.test_image_upload_live.TestImageUploadRobustness" name="test_chunk_too_large_413" time="0.510" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_begin_upload_extra_fields_forbidden" time="0.116" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_begin_upload_zero_size_rejected" time="0.144" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_begin_upload_oversize_rejected" time="0.169" /><testcase classname="tests.test_food_intelligence_api.TestImageUpload" name="test_recommend_rejects_unconfirmed_image_id" time="0.154" /><testcase classname="tests.test_image_upload_live.TestImageUploadHappyPath" name="test_multichunk_jpeg_real_vision" time="30.313"><failure message="requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/food-images (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xfffd35dcd1d0&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)'))">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:239: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:85: in create_connection
+    raise err
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:73: in create_connection
+    sock.connect(sa)
+E   TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:793: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:494: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:470: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1125: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:827: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:248: in _new_conn
+    raise ConnectTimeoutError(
+E   urllib3.exceptions.ConnectTimeoutError: (&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xfffd35dcd1d0&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)')
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:696: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:847: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:555: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/food-images (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xfffd35dcd1d0&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)'))
+
+During handling of the above exception, another exception occurred:
+tests/test_image_upload_live.py:84: in test_multichunk_jpeg_real_vision
+    iid = _upload_full(payload, "tomato.jpg")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_image_upload_live.py:68: in _upload_full
+    init = _init(filename, len(payload))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_image_upload_live.py:51: in _init
+    r = requests.post(f"{API}/food-images", json={"filename": name, "size": size}, timeout=15)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:134: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:71: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:651: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:784: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:717: in send
+    raise ConnectTimeout(e, request=request)
+E   requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/food-images (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xfffd35dcd1d0&gt;, 'Connection to packintel-api.test timed out. (connect timeout=15)'))</failure></testcase><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_analyses_search_invalid_chars_422" time="20.099"><failure message="requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/analyses?search=%3Cscript%3E (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce01cbb910&gt;, 'Connection to packintel-api.test timed out. (connect timeout=10)'))">/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:239: in _new_conn
+    sock = connection.create_connection(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:85: in create_connection
+    raise err
+/root/.venv/lib/python3.11/site-packages/urllib3/util/connection.py:73: in create_connection
+    sock.connect(sa)
+E   TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:793: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:494: in _make_request
+    raise new_e
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:470: in _make_request
+    self._validate_conn(conn)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1125: in _validate_conn
+    conn.connect()
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:827: in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:248: in _new_conn
+    raise ConnectTimeoutError(
+E   urllib3.exceptions.ConnectTimeoutError: (&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce01cbb910&gt;, 'Connection to packintel-api.test timed out. (connect timeout=10)')
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:696: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:847: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:555: in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/analyses?search=%3Cscript%3E (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce01cbb910&gt;, 'Connection to packintel-api.test timed out. (connect timeout=10)'))
+
+During handling of the above exception, another exception occurred:
+tests/test_food_intelligence_api.py:271: in test_analyses_search_invalid_chars_422
+    r = requests.get(f"{API}/analyses", params={"search": "&lt;script&gt;"}, timeout=10)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:87: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:71: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:651: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:784: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:717: in send
+    raise ConnectTimeout(e, request=request)
+E   requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='packintel-api.test', port=443): Max retries exceeded with url: /api/analyses?search=%3Cscript%3E (Caused by ConnectTimeoutError(&lt;HTTPSConnection(host='packintel-api.test', port=443) at 0xf9ce01cbb910&gt;, 'Connection to packintel-api.test timed out. (connect timeout=10)'))</failure></testcase><testcase classname="tests.test_image_upload_live.TestImageUploadHappyPath" name="test_small_png_upload" time="36.059" /><testcase classname="tests.test_food_intelligence_api.TestHistory" name="test_get_unknown_analysis_404" time="0.177" /></testsuite></testsuites>

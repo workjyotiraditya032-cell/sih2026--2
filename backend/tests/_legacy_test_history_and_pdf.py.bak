@@ -1,0 +1,111 @@
+"""Tests for the new Analysis History endpoints (SIH260236 iteration 2)."""
+import os
+import requests
+
+BASE_URL = os.environ.get("VITE_API_BASE_URL", os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8000")).rstrip("/")
+API = f"{BASE_URL}/api"
+
+TOMATO = {
+    "commodity": "Tomato", "food_category": "Fresh Produce",
+    "moisture_content": 94, "oil_content": 0.2, "ph": 4.3,
+    "respiration_rate": "high", "moisture_sensitivity": "high", "oxygen_sensitivity": "medium",
+    "shelf_life_days": 10, "storage_type": "chilled", "temperature": 8, "relative_humidity": 85,
+    "transportation": "refrigerated", "cost_priority": "balanced",
+    "sustainability_priority": "medium", "map_required": True,
+}
+
+
+class TestRecommendReturnsAnalysisId:
+    def test_recommend_returns_analysis_id(self):
+        r = requests.post(f"{API}/recommend", json=TOMATO, timeout=20)
+        assert r.status_code == 200, r.text
+        d = r.json()
+        assert "analysis_id" in d and isinstance(d["analysis_id"], int) and d["analysis_id"] >= 1
+
+
+class TestListAnalyses:
+    def test_list_default(self):
+        r = requests.get(f"{API}/analyses", timeout=10)
+        assert r.status_code == 200
+        d = r.json()
+        assert "count" in d and "analyses" in d
+        assert isinstance(d["analyses"], list)
+        assert len(d["analyses"]) == d["count"]
+
+    def test_list_newest_first(self):
+        d = requests.get(f"{API}/analyses", timeout=10).json()
+        items = d["analyses"]
+        if len(items) >= 2:
+            assert items[0]["created_at"] >= items[1]["created_at"]
+
+    def test_list_required_fields(self):
+        d = requests.get(f"{API}/analyses", params={"limit": 5}, timeout=10).json()
+        assert len(d["analyses"]) >= 1
+        required = {"id", "commodity", "food_category", "recommended_material",
+                    "suitability_score", "storage_type", "temperature",
+                    "relative_humidity", "shelf_life_days", "has_snapshot", "created_at"}
+        for item in d["analyses"]:
+            assert required.issubset(item.keys()), f"missing: {required - item.keys()}"
+
+    def test_list_limit(self):
+        d = requests.get(f"{API}/analyses", params={"limit": 2}, timeout=10).json()
+        assert len(d["analyses"]) <= 2
+
+    def test_search_by_commodity(self):
+        d = requests.get(f"{API}/analyses", params={"search": "Tomato"}, timeout=10).json()
+        assert d["count"] >= 1
+        for item in d["analyses"]:
+            blob = f"{item['commodity']} {item['recommended_material']} {item['food_category']}".lower()
+            assert "tomato" in blob
+
+    def test_search_invalid_chars_422(self):
+        r = requests.get(f"{API}/analyses", params={"search": "<script>"}, timeout=10)
+        assert r.status_code == 422
+
+
+class TestGetAnalysis:
+    def test_get_new_run_stored_snapshot(self):
+        # Create a fresh run
+        rec = requests.post(f"{API}/recommend", json=TOMATO, timeout=20).json()
+        aid = rec["analysis_id"]
+
+        r = requests.get(f"{API}/analyses/{aid}", timeout=10)
+        assert r.status_code == 200, r.text
+        d = r.json()
+        assert d["analysis_id"] == aid
+        assert d.get("history_source") == "stored_snapshot"
+        assert d["recommended_material"]["material_name"] == "Micro-Perforated Film"
+        assert len(d["alternatives"]) == 2
+        assert len(d["ranking"]) > 0
+
+    def test_get_legacy_row_recomputed(self):
+        # Find a legacy row (has_snapshot=false)
+        listing = requests.get(f"{API}/analyses", params={"limit": 500}, timeout=15).json()
+        legacy = [a for a in listing["analyses"] if not a["has_snapshot"]]
+        if not legacy:
+            return  # nothing to test
+        aid = legacy[0]["id"]
+        r = requests.get(f"{API}/analyses/{aid}", timeout=15)
+        # Should either recompute successfully (200) or 409 if incompatible
+        assert r.status_code in (200, 409), r.text
+        if r.status_code == 200:
+            d = r.json()
+            assert d["analysis_id"] == aid
+            assert d.get("history_source") == "recomputed"
+
+    def test_get_unknown_404(self):
+        r = requests.get(f"{API}/analyses/99999999", timeout=10)
+        assert r.status_code == 404
+
+
+class TestNewRunAtTop:
+    def test_new_run_appears_at_top(self):
+        before = requests.get(f"{API}/analyses", params={"limit": 1}, timeout=10).json()
+        before_top = before["analyses"][0]["id"] if before["analyses"] else 0
+
+        rec = requests.post(f"{API}/recommend", json={**TOMATO, "commodity": "Tomato"}, timeout=20).json()
+        aid = rec["analysis_id"]
+        assert aid > before_top
+
+        after = requests.get(f"{API}/analyses", params={"limit": 1}, timeout=10).json()
+        assert after["analyses"][0]["id"] == aid
