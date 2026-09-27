@@ -58,13 +58,21 @@ class Settings:
     # Provider-independent AI configuration
     ai_provider = os.environ.get("AI_PROVIDER", "groq")
     ai_api_key = os.environ.get("AI_API_KEY")
-    ai_model = os.environ.get("AI_MODEL")
-    ai_vision_model = os.environ.get("AI_VISION_MODEL")
+    ai_model = os.environ.get("AI_MODEL") or os.environ.get("GROQ_MODEL") or "openai/gpt-oss-120b"
+    ai_vision_model = (
+        os.environ.get("AI_VISION_MODEL")
+        or os.environ.get("GROQ_VISION_MODEL")
+        or "qwen/qwen3.8-27b"
+    )
 
     # Groq-specific backwards compatibility
     groq_api_key = os.environ.get("GROQ_API_KEY")
     groq_model = os.environ.get("GROQ_MODEL")
-    groq_vision_model = os.environ.get("GROQ_VISION_MODEL")
+    groq_vision_model = (
+        os.environ.get("GROQ_VISION_MODEL")
+        or os.environ.get("AI_VISION_MODEL")
+        or "qwen/qwen3.8-27b"
+    )
     groq_base_url = os.environ.get("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 
     # File uploads

@@ -30,6 +30,8 @@ export interface ImageIdentification {
   explanation: string;
   mode: 'ai' | 'unavailable';
   requires_confirmation: boolean;
+  error_code?: string | null;
+  model?: string | null;
 }
 
 export interface FoodProfile {

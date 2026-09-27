@@ -20,7 +20,23 @@ T = TypeVar("T", bound=BaseModel)
 
 class AIUnavailable(Exception):
     """Raised when an AI provider is unconfigured, unreachable, or returns invalid outputs."""
-    pass
+
+    def __init__(self, code: str = "unavailable", detail: Optional[str] = None):
+        super().__init__(detail or code)
+        self.code = code
+        self.detail = detail or code
+
+
+def _clean_json_text(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+    return text
 
 
 SYSTEM_PROMPT = (
@@ -55,7 +71,7 @@ class GroqProvider(AIProvider):
     def __init__(self, api_key: str, model: str, vision_model: Optional[str] = None, base_url: Optional[str] = None):
         self.api_key = api_key
         self.model = model
-        self.vision_model = vision_model or model
+        self.vision_model = vision_model or settings.ai_vision_model or "qwen/qwen3.8-27b"
         self.base_url = (base_url or "https://api.groq.com/openai/v1").rstrip("/")
 
     def complete(
@@ -105,12 +121,46 @@ class GroqProvider(AIProvider):
                     json=body,
                 )
             response.raise_for_status()
-            raw_text = response.json()["choices"][0]["message"]["content"]
-            return schema.model_validate_json(raw_text)
-        except (httpx.HTTPError, ValidationError, ValueError, KeyError, IndexError, TypeError) as exc:
-            status = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else type(exc).__name__
-            logger.warning("Groq provider call failed (%s); using explicit fallback", status)
-            raise AIUnavailable("provider_unavailable_or_invalid") from exc
+            res_json = response.json()
+            raw_text = res_json["choices"][0]["message"]["content"]
+            clean_text = _clean_json_text(raw_text)
+            return schema.model_validate_json(clean_text)
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code
+            error_data = {}
+            try:
+                error_data = exc.response.json().get("error", {})
+            except Exception:
+                pass
+            err_code = error_data.get("code") or ""
+            err_msg = error_data.get("message") or exc.response.text
+
+            # Log server-side diagnostic info with model and error detail (safe: no secrets)
+            logger.error(
+                "Groq provider HTTP %s for model '%s' (code: %s): %s",
+                status,
+                selected_model,
+                err_code,
+                err_msg,
+            )
+
+            if status in (401, 403):
+                raise AIUnavailable("auth_error", "Groq API authentication failed. Verify API key.") from exc
+            elif err_code in ("model_decommissioned", "model_not_found") or status == 404:
+                raise AIUnavailable("model_unavailable", f"Model '{selected_model}' is unavailable or decommissioned.") from exc
+            elif status == 429:
+                raise AIUnavailable("rate_limit", "Groq API rate limit reached.") from exc
+            else:
+                raise AIUnavailable("generic_ai_failure", f"Groq API returned HTTP {status}.") from exc
+        except (httpx.TimeoutException, httpx.ConnectTimeout) as exc:
+            logger.error("Groq provider request timed out for model '%s'", selected_model)
+            raise AIUnavailable("timeout", "Groq API request timed out.") from exc
+        except httpx.RequestError as exc:
+            logger.error("Groq provider network/connect error for model '%s': %s", selected_model, exc)
+            raise AIUnavailable("generic_ai_failure", "Failed to connect to Groq API.") from exc
+        except (ValidationError, json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+            logger.error("Groq provider invalid output format from model '%s': %s", selected_model, exc)
+            raise AIUnavailable("generic_ai_failure", "Invalid or malformed response structure from AI model.") from exc
 
 
 class OpenAIProvider(AIProvider):
@@ -233,11 +283,17 @@ def get_ai_provider() -> AIProvider:
     if not api_key:
         return NullAIProvider()
 
+    vision_model = (
+        settings.ai_vision_model
+        or settings.groq_vision_model
+        or "qwen/qwen3.8-27b"
+    )
+
     if provider_name == "groq":
         return GroqProvider(
             api_key=api_key,
             model=settings.ai_model or settings.groq_model or "openai/gpt-oss-120b",
-            vision_model=settings.groq_vision_model,
+            vision_model=vision_model,
             base_url=settings.groq_base_url,
         )
     elif provider_name in ("openai", "chatgpt"):

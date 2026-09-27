@@ -124,8 +124,12 @@ def finish_upload(image_id: str) -> dict:
             buffer = io.BytesIO()
             image.save(buffer, format="JPEG", quality=85)
             data = buffer.getvalue()
-    except (UnidentifiedImageError, OSError, Image.DecompressionBombError):
+    except HTTPException:
         path.unlink(missing_ok=True)
+        raise
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        path.unlink(missing_ok=True)
+        logger.warning("Invalid image upload: %s", exc)
         raise HTTPException(415, "The file is not a valid JPEG/PNG image, or its pixel dimensions are too large.")
 
     # Save to MongoDB GridFS
@@ -141,6 +145,11 @@ def finish_upload(image_id: str) -> dict:
 
     # Perform AI vision identification using configured AIProvider
     ai_provider = get_ai_provider()
+    active_vision_model = (
+        getattr(ai_provider, "vision_model", None)
+        or settings.ai_vision_model
+        or "qwen/qwen3.8-27b"
+    )
     try:
         detection = ai_provider.complete(
             ImageIdentification,
@@ -153,18 +162,36 @@ def finish_upload(image_id: str) -> dict:
         identification = {
             **detection.model_dump(),
             "mode": "ai",
-            "model": settings.ai_model or settings.groq_vision_model,
+            "model": active_vision_model,
             "requires_confirmation": True,
+            "error_code": None,
         }
-    except AIUnavailable:
+    except AIUnavailable as exc:
+        err_code = getattr(exc, "code", "unavailable")
+        err_detail = getattr(exc, "detail", str(exc))
+        logger.warning("AI vision identification unavailable (code: %s, detail: %s)", err_code, err_detail)
+
+        user_explanations = {
+            "auth_error": "AI service authentication error. Enter the food name manually and confirm it to continue.",
+            "model_unavailable": "AI vision model is temporarily unavailable. Enter the food name manually and confirm it to continue.",
+            "rate_limit": "AI service rate limit reached. Please enter the food name manually or retry shortly.",
+            "timeout": "AI image analysis timed out. Enter the food name manually and confirm it to continue.",
+            "not_configured": "AI image identification is not configured. Enter the food name manually and confirm it to continue.",
+            "generic_ai_failure": "AI image identification could not complete. Enter the food name manually and confirm it to continue.",
+        }
+        explanation = user_explanations.get(
+            err_code,
+            "AI image identification is temporarily unavailable. Enter the food name manually and confirm it to continue.",
+        )
         identification = {
             "food_name": None,
             "confidence": "low",
             "unclear": True,
             "mode": "unavailable",
-            "model": None,
-            "explanation": "AI image identification is temporarily unavailable. Enter the food name manually and confirm it to continue.",
+            "model": active_vision_model,
+            "explanation": explanation,
             "requires_confirmation": True,
+            "error_code": err_code,
         }
 
     # Update record in MongoDB
