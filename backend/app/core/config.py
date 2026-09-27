@@ -11,8 +11,12 @@ SQL_DIR = PROJECT_DIR / "database"
 load_dotenv(BACKEND_DIR / ".env")
 
 
+def _normalize_origin(origin: str) -> str:
+    return origin.strip().rstrip("/")
+
+
 def _csv(value: str) -> list[str]:
-    return [item.strip() for item in value.split(",") if item.strip()]
+    return [_normalize_origin(item) for item in value.split(",") if item.strip()]
 
 
 class Settings:
@@ -27,12 +31,20 @@ class Settings:
     mongodb_db_name = os.environ.get("MONGODB_DB_NAME") or os.environ.get("DB_NAME") or "packintel"
 
     # Frontend URL & CORS
-    frontend_url = os.environ.get("FRONTEND_URL", "")
+    frontend_url = os.environ.get("FRONTEND_URL", "https://sih2026-2.vercel.app")
     _custom_cors = _csv(os.environ.get("CORS_ORIGINS", ""))
 
     @property
     def cors_origins(self) -> list[str]:
-        origins = []
+        origins = [
+            "https://sih2026-2.vercel.app",
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://localhost:8000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:8000",
+        ]
         if self.frontend_url:
             origins.extend(_csv(self.frontend_url))
         if self._custom_cors:

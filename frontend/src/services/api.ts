@@ -14,11 +14,12 @@ import type {
   RecommendationResponse,
 } from "../types";
 
-const apiBase = (
+const rawBase = (
   process.env.VITE_API_BASE_URL ||
   process.env.REACT_APP_BACKEND_URL ||
   "https://sih2026-2-j71x.onrender.com"
 ).replace(/\/+$/, "");
+const apiBase = rawBase.replace(/\/api$/, "");
 const client = axios.create({
   baseURL: apiBase ? `${apiBase}/api` : "/api",
   timeout: 15000,

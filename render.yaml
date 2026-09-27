@@ -17,7 +17,7 @@ services:
       - key: MONGODB_DB_NAME
         value: packintel
       - key: FRONTEND_URL
-        sync: false
+        value: https://sih2026-2.vercel.app
       - key: AI_PROVIDER
         value: groq
       - key: AI_API_KEY

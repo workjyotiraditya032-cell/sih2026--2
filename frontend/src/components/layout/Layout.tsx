@@ -12,7 +12,7 @@ const Footer = () => (
       <div className="flex gap-5">
         <Link to="/methodology" className="hover:text-slate-900" data-testid="footer-methodology-link">Methodology</Link>
         <Link to="/materials" className="hover:text-slate-900" data-testid="footer-materials-link">Material Library</Link>
-        <a href={`${(process.env.VITE_API_BASE_URL || process.env.REACT_APP_BACKEND_URL || "https://sih2026-2-j71x.onrender.com").replace(/\/+$/, "")}/api/docs`} target="_blank" rel="noreferrer" className="hover:text-slate-900" data-testid="footer-api-docs-link">
+        <a href={`${(process.env.VITE_API_BASE_URL || process.env.REACT_APP_BACKEND_URL || "https://sih2026-2-j71x.onrender.com").replace(/\/+$/, "").replace(/\/api$/, "")}/api/docs`} target="_blank" rel="noreferrer" className="hover:text-slate-900" data-testid="footer-api-docs-link">
           API Docs
         </a>
       </div>
